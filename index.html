@@ -1,19 +1,1795 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Academy</title>
-    <link rel="stylesheet" href="css/style.css">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Prefab — Build skills, not habits</title>
+    <meta name="description" content="Self-paced video courses for people who ship. Prefab." />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet" />
+    <style>
+        /* ============================================================
+               TOKENS & RESET
+               ============================================================ */
+        :root {
+            --black: #050505;
+            --black-2: #0c0c0c;
+            --white: #f5f5f5;
+            --white-dim: #b8b8b8;
+            --grey-line: #2a2a2a;
+            --grey-line-strong: #444;
+            --accent: #f5f5f5;
+            --font-display: 'Space Grotesk', 'SF Pro Display', system-ui, sans-serif;
+            --font-mono: 'JetBrains Mono', 'SF Mono', monospace;
+            --font-body: 'Space Grotesk', 'SF Pro Display', system-ui, sans-serif;
+            --container: 1180px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            background: var(--black);
+            color: var(--white);
+            font-family: var(--font-body);
+            line-height: 1.5;
+            -webkit-font-smoothing: antialiased;
+            overflow-x: hidden;
+        }
+
+        a {
+            color: inherit;
+            text-decoration: none;
+        }
+        ul {
+            list-style: none;
+        }
+
+        ::selection {
+            background: var(--white);
+            color: var(--black);
+        }
+
+        /* ============================================================
+               BACKGROUND LAYERS
+               ============================================================ */
+        .grid-bg {
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            pointer-events: none;
+            background-image:
+                linear-gradient(to right, rgba(255, 255, 255, 0.035) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(255, 255, 255, 0.035) 1px, transparent 1px);
+            background-size: 64px 64px;
+            mask-image: radial-gradient(ellipse 80% 60% at 50% 0%, black 30%, transparent 75%);
+            -webkit-mask-image: radial-gradient(ellipse 80% 60% at 50% 0%, black 30%, transparent 75%);
+        }
+
+        .scanline {
+            position: fixed;
+            inset: 0;
+            z-index: 1;
+            pointer-events: none;
+            background: repeating-linear-gradient(to bottom,
+                    rgba(255, 255, 255, 0.015) 0px,
+                    rgba(255, 255, 255, 0.015) 1px,
+                    transparent 1px,
+                    transparent 3px);
+            opacity: 0.6;
+        }
+
+        /* ============================================================
+               LAYOUT HELPERS
+               ============================================================ */
+        main,
+        .nav-inner,
+        .footer-inner {
+            position: relative;
+            z-index: 2;
+        }
+
+        section {
+            max-width: var(--container);
+            margin: 0 auto;
+            padding: 120px 32px;
+            border-bottom: 1px solid var(--grey-line);
+        }
+
+        .eyebrow {
+            font-family: var(--font-mono);
+            font-size: 12px;
+            letter-spacing: 0.18em;
+            text-transform: uppercase;
+            color: var(--white-dim);
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .dot {
+            display: inline-block;
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--white-dim);
+            flex-shrink: 0;
+        }
+
+        .section-head {
+            margin-bottom: 64px;
+            max-width: 640px;
+        }
+
+        .section-head h2 {
+            font-family: var(--font-display);
+            font-weight: 700;
+            font-size: clamp(28px, 4vw, 42px);
+            letter-spacing: -0.01em;
+        }
+
+        /* ============================================================
+               BUTTONS
+               ============================================================ */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            font-family: var(--font-mono);
+            font-size: 13px;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            padding: 14px 28px;
+            border-radius: 2px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border: 1px solid transparent;
+            background: transparent;
+            color: var(--white);
+            font-weight: 500;
+        }
+
+        .btn-solid {
+            background: var(--white);
+            color: var(--black);
+            border-color: var(--white);
+        }
+        .btn-solid:hover {
+            background: var(--white-dim);
+            border-color: var(--white-dim);
+            transform: translateY(-1px);
+        }
+
+        .btn-outline {
+            background: transparent;
+            color: var(--white);
+            border-color: var(--grey-line-strong);
+        }
+        .btn-outline:hover {
+            border-color: var(--white);
+            background: rgba(255, 255, 255, 0.04);
+        }
+
+        .btn-ghost {
+            background: transparent;
+            color: var(--white);
+            border-color: var(--grey-line-strong);
+            padding: 10px 20px;
+            font-size: 12px;
+        }
+        .btn-ghost:hover {
+            border-color: var(--white);
+        }
+
+        .btn-small {
+            padding: 8px 18px;
+            font-size: 11px;
+            border-radius: 2px;
+        }
+
+        .btn-large {
+            padding: 18px 40px;
+            font-size: 15px;
+        }
+
+        .btn-full {
+            width: 100%;
+            justify-content: center;
+        }
+
+        .arrow {
+            display: inline-block;
+            transition: transform 0.2s ease;
+        }
+        .btn:hover .arrow {
+            transform: translateX(4px);
+        }
+
+        /* ============================================================
+               NAV
+               ============================================================ */
+        .nav {
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            background: rgba(5, 5, 5, 0.75);
+            border-bottom: 1px solid var(--grey-line);
+        }
+
+        .nav-inner {
+            max-width: var(--container);
+            margin: 0 auto;
+            padding: 20px 32px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .logo {
+            font-family: var(--font-display);
+            font-weight: 800;
+            font-size: 18px;
+            letter-spacing: 0.04em;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .logo-mark {
+            display: inline-block;
+            font-size: 20px;
+            line-height: 1;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 32px;
+            font-family: var(--font-mono);
+            font-size: 13px;
+            letter-spacing: 0.04em;
+        }
+        .nav-links a {
+            color: var(--white-dim);
+            transition: color 0.15s ease;
+        }
+        .nav-links a:hover {
+            color: var(--white);
+        }
+
+        .nav-cta {
+            font-size: 12px;
+            padding: 10px 20px;
+        }
+
+        /* mobile nav toggle */
+        .nav-toggle {
+            display: none;
+            flex-direction: column;
+            gap: 5px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 4px;
+        }
+        .nav-toggle span {
+            display: block;
+            width: 24px;
+            height: 2px;
+            background: var(--white);
+            transition: all 0.25s ease;
+        }
+        .nav-toggle.open span:nth-child(1) {
+            transform: rotate(45deg) translate(5px, 5px);
+        }
+        .nav-toggle.open span:nth-child(2) {
+            opacity: 0;
+        }
+        .nav-toggle.open span:nth-child(3) {
+            transform: rotate(-45deg) translate(5px, -5px);
+        }
+
+        /* ============================================================
+               HERO
+               ============================================================ */
+        .hero {
+            max-width: var(--container);
+            margin: 0 auto;
+            padding: 100px 32px 120px;
+            display: grid;
+            grid-template-columns: 1.1fr 0.9fr;
+            gap: 60px;
+            align-items: center;
+            border-bottom: 1px solid var(--grey-line);
+        }
+
+        .hero-title {
+            font-family: var(--font-display);
+            font-weight: 800;
+            font-size: clamp(40px, 5.5vw, 68px);
+            line-height: 1.03;
+            letter-spacing: -0.02em;
+            margin-bottom: 24px;
+        }
+
+        .text-outline {
+            -webkit-text-stroke: 1.5px var(--white);
+            color: transparent;
+            text-stroke: 1.5px var(--white);
+        }
+
+        .hero-sub {
+            font-size: 17px;
+            color: var(--white-dim);
+            max-width: 480px;
+            margin-bottom: 40px;
+        }
+
+        .hero-actions {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 56px;
+            flex-wrap: wrap;
+        }
+
+        .hero-stats {
+            display: flex;
+            align-items: center;
+            gap: 40px;
+            font-family: var(--font-mono);
+        }
+        .stat {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+        .stat-num {
+            font-size: 24px;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+        }
+        .stat-label {
+            font-size: 11px;
+            color: var(--white-dim);
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+        }
+
+        /* Hero terminal panel */
+        .hero-panel {
+            background: var(--black-2);
+            border: 1px solid var(--grey-line-strong);
+            border-radius: 6px;
+            overflow: hidden;
+            box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.02), 0 40px 80px -30px rgba(0, 0, 0, 0.9);
+        }
+
+        .panel-head {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 16px;
+            border-bottom: 1px solid var(--grey-line);
+            background: rgba(255, 255, 255, 0.02);
+        }
+        .panel-head span {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: var(--grey-line-strong);
+        }
+        .panel-head span:nth-child(1) {
+            background: #ff5f57;
+        }
+        .panel-head span:nth-child(2) {
+            background: #ffbd2e;
+        }
+        .panel-head span:nth-child(3) {
+            background: #28c840;
+        }
+        .panel-title {
+            font-family: var(--font-mono);
+            font-size: 11px;
+            color: var(--white-dim);
+            margin-left: 8px;
+            letter-spacing: 0.04em;
+        }
+
+        .panel-body {
+            padding: 28px 20px 20px;
+            font-family: var(--font-mono);
+        }
+
+        .waveform {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 3px;
+            height: 40px;
+            margin-bottom: 20px;
+        }
+        .waveform span {
+            display: block;
+            width: 4px;
+            background: var(--white-dim);
+            border-radius: 2px;
+            animation: wave 1.2s ease-in-out infinite alternate;
+        }
+        .waveform span:nth-child(1) {
+            height: 18px;
+            animation-delay: 0.0s;
+        }
+        .waveform span:nth-child(2) {
+            height: 30px;
+            animation-delay: 0.1s;
+        }
+        .waveform span:nth-child(3) {
+            height: 22px;
+            animation-delay: 0.2s;
+        }
+        .waveform span:nth-child(4) {
+            height: 36px;
+            animation-delay: 0.3s;
+        }
+        .waveform span:nth-child(5) {
+            height: 14px;
+            animation-delay: 0.4s;
+        }
+        .waveform span:nth-child(6) {
+            height: 28px;
+            animation-delay: 0.5s;
+        }
+        .waveform span:nth-child(7) {
+            height: 20px;
+            animation-delay: 0.6s;
+        }
+        .waveform span:nth-child(8) {
+            height: 34px;
+            animation-delay: 0.7s;
+        }
+        .waveform span:nth-child(9) {
+            height: 16px;
+            animation-delay: 0.8s;
+        }
+        .waveform span:nth-child(10) {
+            height: 26px;
+            animation-delay: 0.9s;
+        }
+        .waveform span:nth-child(11) {
+            height: 32px;
+            animation-delay: 0.2s;
+        }
+        .waveform span:nth-child(12) {
+            height: 12px;
+            animation-delay: 0.4s;
+        }
+        .waveform span:nth-child(13) {
+            height: 24px;
+            animation-delay: 0.6s;
+        }
+        .waveform span:nth-child(14) {
+            height: 38px;
+            animation-delay: 0.8s;
+        }
+        .waveform span:nth-child(15) {
+            height: 18px;
+            animation-delay: 0.1s;
+        }
+        .waveform span:nth-child(16) {
+            height: 28px;
+            animation-delay: 0.3s;
+        }
+        .waveform span:nth-child(17) {
+            height: 22px;
+            animation-delay: 0.5s;
+        }
+        .waveform span:nth-child(18) {
+            height: 34px;
+            animation-delay: 0.7s;
+        }
+        .waveform span:nth-child(19) {
+            height: 16px;
+            animation-delay: 0.9s;
+        }
+        .waveform span:nth-child(20) {
+            height: 30px;
+            animation-delay: 0.0s;
+        }
+
+        @keyframes wave {
+            0% {
+                transform: scaleY(0.4);
+                background: var(--grey-line-strong);
+            }
+            100% {
+                transform: scaleY(1);
+                background: var(--white);
+            }
+        }
+
+        .panel-meta {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            color: var(--white-dim);
+            letter-spacing: 0.04em;
+            padding: 0 4px;
+            margin-bottom: 12px;
+        }
+        .timecode {
+            font-weight: 500;
+            color: var(--white);
+        }
+
+        .progress-track {
+            width: 100%;
+            height: 3px;
+            background: var(--grey-line);
+            border-radius: 2px;
+            overflow: hidden;
+        }
+        .progress-fill {
+            height: 100%;
+            width: 62%;
+            background: var(--white);
+            border-radius: 2px;
+        }
+
+        /* ============================================================
+               TRUST STRIP
+               ============================================================ */
+        .trust-strip {
+            border-bottom: 1px solid var(--grey-line);
+            padding: 40px 32px;
+            max-width: var(--container);
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+        .trust-label {
+            font-family: var(--font-mono);
+            font-size: 11px;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            color: var(--white-dim);
+        }
+        .trust-marks {
+            display: flex;
+            gap: 32px;
+            flex-wrap: wrap;
+            font-family: var(--font-mono);
+            font-size: 13px;
+            font-weight: 500;
+            letter-spacing: 0.04em;
+            color: var(--white-dim);
+        }
+        .trust-marks span {
+            opacity: 0.7;
+            transition: opacity 0.2s ease;
+        }
+        .trust-marks span:hover {
+            opacity: 1;
+        }
+
+        /* ============================================================
+               CATALOG / COURSES
+               ============================================================ */
+        .course-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1px;
+            background: var(--grey-line);
+            border: 1px solid var(--grey-line);
+        }
+
+        .course-card {
+            background: var(--black);
+            padding: 40px;
+            transition: background 0.2s ease;
+            display: flex;
+            flex-direction: column;
+        }
+        .course-card:hover {
+            background: var(--black-2);
+        }
+
+        .course-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+        .course-tag {
+            font-family: var(--font-mono);
+            font-size: 10px;
+            letter-spacing: 0.1em;
+            color: var(--white-dim);
+            border: 1px solid var(--grey-line-strong);
+            padding: 4px 10px;
+            border-radius: 2px;
+        }
+        .course-level {
+            font-family: var(--font-mono);
+            font-size: 10px;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            color: var(--white-dim);
+            padding: 4px 10px;
+            border: 1px solid var(--grey-line-strong);
+            border-radius: 2px;
+        }
+
+        .course-card h3 {
+            font-family: var(--font-display);
+            font-size: 22px;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .course-card p {
+            color: var(--white-dim);
+            font-size: 14px;
+            margin-bottom: 24px;
+            max-width: 420px;
+            flex-grow: 1;
+        }
+
+        .course-meta {
+            display: flex;
+            gap: 20px;
+            font-family: var(--font-mono);
+            font-size: 12px;
+            color: var(--white-dim);
+            margin-bottom: 24px;
+        }
+        .course-meta li {
+            position: relative;
+        }
+        .course-meta li:not(:last-child)::after {
+            content: "·";
+            margin-left: 20px;
+            color: var(--grey-line-strong);
+        }
+
+        .course-foot {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-top: 1px solid var(--grey-line);
+            padding-top: 20px;
+        }
+        .price {
+            font-family: var(--font-display);
+            font-size: 20px;
+            font-weight: 700;
+            letter-spacing: -0.01em;
+        }
+
+        /* ============================================================
+               METHOD
+               ============================================================ */
+        .method-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 40px;
+        }
+
+        .method-step {
+            padding: 32px 28px;
+            border: 1px solid var(--grey-line);
+            border-radius: 4px;
+            transition: border-color 0.2s ease;
+        }
+        .method-step:hover {
+            border-color: var(--grey-line-strong);
+        }
+
+        .step-index {
+            font-family: var(--font-display);
+            font-size: 40px;
+            font-weight: 800;
+            -webkit-text-stroke: 1.5px var(--white);
+            color: transparent;
+            text-stroke: 1.5px var(--white);
+            display: block;
+            margin-bottom: 16px;
+            line-height: 1;
+        }
+
+        .method-step h3 {
+            font-family: var(--font-display);
+            font-size: 19px;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .method-step p {
+            color: var(--white-dim);
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        /* ============================================================
+               PRICING
+               ============================================================ */
+        .pricing-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 24px;
+        }
+
+        .price-card {
+            border: 1px solid var(--grey-line-strong);
+            border-radius: 6px;
+            padding: 36px 28px;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            transition: border-color 0.25s ease, background 0.25s ease;
+        }
+        .price-card:hover {
+            border-color: var(--white-dim);
+        }
+
+        .price-card-featured {
+            border-color: var(--white);
+            background: var(--black-2);
+        }
+        .price-card-featured:hover {
+            border-color: var(--white);
+        }
+
+        .featured-tag {
+            position: absolute;
+            top: -12px;
+            left: 28px;
+            background: var(--white);
+            color: var(--black);
+            font-family: var(--font-mono);
+            font-size: 9px;
+            letter-spacing: 0.08em;
+            padding: 4px 12px;
+            border-radius: 2px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .price-card h3 {
+            font-family: var(--font-display);
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .price-desc {
+            font-size: 13px;
+            color: var(--white-dim);
+            margin-bottom: 20px;
+        }
+
+        .price-tag {
+            font-family: var(--font-display);
+            font-size: 36px;
+            font-weight: 800;
+            margin-bottom: 24px;
+            display: flex;
+            align-items: baseline;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+        .price-tag .currency {
+            font-size: 20px;
+            font-weight: 600;
+        }
+        .price-from {
+            font-family: var(--font-mono);
+            font-size: 12px;
+            font-weight: 400;
+            color: var(--white-dim);
+            margin-left: 4px;
+        }
+        .price-custom {
+            font-size: 28px;
+            font-weight: 600;
+            letter-spacing: 0.04em;
+        }
+
+        .price-features {
+            flex-grow: 1;
+            margin-bottom: 32px;
+        }
+        .price-features li {
+            font-size: 14px;
+            color: var(--white-dim);
+            padding-left: 20px;
+            position: relative;
+            margin-bottom: 12px;
+        }
+        .price-features li::before {
+            content: "—";
+            position: absolute;
+            left: 0;
+            color: var(--grey-line-strong);
+        }
+
+        .pricing-note {
+            text-align: center;
+            font-family: var(--font-mono);
+            font-size: 12px;
+            color: var(--white-dim);
+            margin-top: 40px;
+            letter-spacing: 0.03em;
+        }
+
+        /* ============================================================
+               FAQ
+               ============================================================ */
+        .faq-list {
+            max-width: 720px;
+        }
+
+        .faq-item {
+            border-bottom: 1px solid var(--grey-line);
+            padding: 22px 0;
+        }
+
+        .faq-item summary {
+            font-family: var(--font-display);
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            list-style: none;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            user-select: none;
+        }
+        .faq-item summary::-webkit-details-marker {
+            display: none;
+        }
+        .faq-item summary::after {
+            content: "+";
+            font-family: var(--font-mono);
+            font-size: 22px;
+            font-weight: 400;
+            color: var(--white-dim);
+            transition: transform 0.25s ease;
+        }
+        .faq-item[open] summary::after {
+            transform: rotate(45deg);
+        }
+
+        .faq-item p {
+            color: var(--white-dim);
+            font-size: 14px;
+            margin-top: 14px;
+            max-width: 600px;
+            line-height: 1.7;
+        }
+
+        /* ============================================================
+               FINAL CTA
+               ============================================================ */
+        .final-cta {
+            border-bottom: none;
+            text-align: center;
+            padding: 100px 32px 120px;
+        }
+        .final-cta h2 {
+            font-family: var(--font-display);
+            font-size: clamp(30px, 4.5vw, 52px);
+            font-weight: 800;
+            letter-spacing: -0.02em;
+            margin-bottom: 32px;
+            line-height: 1.08;
+        }
+
+        /* ============================================================
+               FOOTER
+               ============================================================ */
+        .footer {
+            padding: 60px 32px 40px;
+            border-top: 1px solid var(--grey-line);
+        }
+        .footer-inner {
+            max-width: var(--container);
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            align-items: center;
+            text-align: center;
+        }
+        .footer-brand {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-family: var(--font-display);
+            font-weight: 800;
+            font-size: 18px;
+            letter-spacing: 0.04em;
+        }
+        .footer-brand p {
+            font-weight: 400;
+            font-size: 13px;
+            color: var(--white-dim);
+            margin-left: 8px;
+            font-family: var(--font-body);
+        }
+
+        .footer-cols {
+            display: flex;
+            gap: 60px;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-top: 8px;
+        }
+        .footer-col h4 {
+            font-family: var(--font-mono);
+            font-size: 11px;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: var(--white-dim);
+            margin-bottom: 12px;
+        }
+        .footer-col a {
+            display: block;
+            font-size: 13px;
+            color: var(--white-dim);
+            margin-bottom: 6px;
+            transition: color 0.15s ease;
+        }
+        .footer-col a:hover {
+            color: var(--white);
+        }
+
+        .footer-bottom {
+            max-width: var(--container);
+            margin: 24px auto 0;
+            padding-top: 24px;
+            border-top: 1px solid var(--grey-line);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+            font-family: var(--font-mono);
+            font-size: 11px;
+            color: var(--grey-line-strong);
+        }
+        .footer-tag {
+            color: var(--white-dim);
+            letter-spacing: 0.04em;
+        }
+
+        /* ============================================================
+               MODAL
+               ============================================================ */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 100;
+            background: rgba(0, 0, 0, 0.75);
+            backdrop-filter: blur(6px);
+            -webkit-backdrop-filter: blur(6px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+            padding: 24px;
+        }
+        .modal-overlay.open {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal {
+            background: var(--black-2);
+            border: 1px solid var(--grey-line-strong);
+            border-radius: 8px;
+            max-width: 480px;
+            width: 100%;
+            padding: 40px 36px;
+            position: relative;
+            transform: scale(0.96) translateY(12px);
+            transition: transform 0.3s ease;
+        }
+        .modal-overlay.open .modal {
+            transform: scale(1) translateY(0);
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 16px;
+            right: 20px;
+            background: none;
+            border: none;
+            color: var(--white-dim);
+            font-size: 28px;
+            cursor: pointer;
+            transition: color 0.2s ease;
+            line-height: 1;
+        }
+        .modal-close:hover {
+            color: var(--white);
+        }
+
+        .modal .eyebrow {
+            margin-bottom: 6px;
+        }
+        .modal h3 {
+            font-family: var(--font-display);
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 20px;
+        }
+
+        .modal-summary {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 0;
+            border-top: 1px solid var(--grey-line);
+            border-bottom: 1px solid var(--grey-line);
+            margin-bottom: 24px;
+            font-family: var(--font-display);
+            font-size: 18px;
+            font-weight: 600;
+        }
+        #modalPlanPrice {
+            font-weight: 700;
+        }
+
+        #checkoutForm label {
+            display: block;
+            font-family: var(--font-mono);
+            font-size: 11px;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            color: var(--white-dim);
+            margin-bottom: 16px;
+        }
+        #checkoutForm input {
+            display: block;
+            width: 100%;
+            margin-top: 6px;
+            padding: 12px 14px;
+            background: var(--black);
+            border: 1px solid var(--grey-line-strong);
+            border-radius: 4px;
+            color: var(--white);
+            font-family: var(--font-body);
+            font-size: 15px;
+            transition: border-color 0.2s ease;
+        }
+        #checkoutForm input:focus {
+            outline: none;
+            border-color: var(--white);
+        }
+        #checkoutForm input::placeholder {
+            color: var(--grey-line-strong);
+        }
+
+        .modal-note {
+            font-family: var(--font-mono);
+            font-size: 11px;
+            color: var(--grey-line-strong);
+            margin-top: 20px;
+            text-align: center;
+            letter-spacing: 0.03em;
+        }
+
+        /* ============================================================
+               RESPONSIVE
+               ============================================================ */
+        @media (max-width: 1024px) {
+            .pricing-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+            .price-card:last-child {
+                grid-column: span 2;
+            }
+        }
+
+        @media (max-width: 900px) {
+            .hero {
+                grid-template-columns: 1fr;
+                gap: 40px;
+                padding: 60px 24px 80px;
+            }
+            .hero-title {
+                font-size: clamp(34px, 7vw, 48px);
+            }
+            .hero-actions {
+                margin-bottom: 32px;
+            }
+            .hero-stats {
+                gap: 24px;
+            }
+
+            .course-grid {
+                grid-template-columns: 1fr;
+            }
+            .method-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            .pricing-grid {
+                grid-template-columns: 1fr;
+            }
+            .price-card:last-child {
+                grid-column: span 1;
+            }
+
+            .nav-links {
+                display: none;
+                position: absolute;
+                top: 100%;
+                left: 0;
+                right: 0;
+                flex-direction: column;
+                background: rgba(5, 5, 5, 0.97);
+                padding: 24px 32px;
+                gap: 20px;
+                border-bottom: 1px solid var(--grey-line);
+            }
+            .nav-links.open {
+                display: flex;
+            }
+            .nav-toggle {
+                display: flex;
+            }
+            .nav-cta {
+                display: none;
+            }
+
+            section {
+                padding: 80px 20px;
+            }
+            .course-card {
+                padding: 28px 24px;
+            }
+            .footer-cols {
+                gap: 32px;
+            }
+            .footer-bottom {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .trust-strip {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 12px;
+                padding: 28px 20px;
+            }
+            .trust-marks {
+                gap: 20px;
+                font-size: 12px;
+            }
+
+            .modal {
+                padding: 32px 24px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .hero {
+                padding: 40px 16px 60px;
+            }
+            .hero-stats {
+                flex-wrap: wrap;
+                gap: 16px;
+            }
+            .stat-num {
+                font-size: 20px;
+            }
+            .btn {
+                font-size: 11px;
+                padding: 12px 20px;
+            }
+            .btn-large {
+                padding: 14px 28px;
+                font-size: 13px;
+            }
+            .price-tag {
+                font-size: 28px;
+            }
+            .course-card h3 {
+                font-size: 19px;
+            }
+            .course-meta {
+                flex-wrap: wrap;
+                gap: 12px;
+            }
+            .course-meta li:not(:last-child)::after {
+                margin-left: 12px;
+            }
+            section {
+                padding: 60px 16px;
+            }
+            .final-cta {
+                padding: 60px 16px 80px;
+            }
+            .panel-body {
+                padding: 16px 12px;
+            }
+            .waveform span {
+                width: 3px;
+            }
+        }
+
+        /* ============================================================
+               ACCESSIBILITY
+               ============================================================ */
+        a:focus-visible,
+        button:focus-visible,
+        summary:focus-visible,
+        input:focus-visible {
+            outline: 2px solid var(--white);
+            outline-offset: 3px;
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            * {
+                animation: none !important;
+                transition: none !important;
+            }
+            html {
+                scroll-behavior: auto;
+            }
+        }
+    </style>
 </head>
 <body>
 
-    <h1>Welcome to Prefab AI</h1>
-    <p>Your future AI learning platform.</p>
+    <!-- ===== BACKGROUND LAYERS ===== -->
+    <div class="grid-bg" aria-hidden="true"></div>
+    <div class="scanline" aria-hidden="true"></div>
 
-    <button>Coming Soon</button>
+    <!-- ===== NAV ===== -->
+    <header class="nav">
+        <div class="nav-inner">
+            <a href="#top" class="logo">
+                <span class="logo-mark">▣</span>PREFAB
+            </a>
+            <nav class="nav-links" id="navLinks">
+                <a href="#catalog">Catalog</a>
+                <a href="#method">Method</a>
+                <a href="#pricing">Pricing</a>
+                <a href="#faq">FAQ</a>
+            </nav>
+            <button class="nav-toggle" id="navToggle" aria-label="Toggle navigation" aria-expanded="false">
+                <span></span><span></span><span></span>
+            </button>
+            <a href="#pricing" class="btn btn-ghost nav-cta">Enroll</a>
+        </div>
+    </header>
 
-    <script src="js/script.js"></script>
+    <main id="top">
+
+        <!-- ===== HERO ===== -->
+        <section class="hero">
+            <div class="hero-inner">
+                <p class="eyebrow"><span class="dot"></span> SELF-PACED · LIFETIME ACCESS · NO COHORTS TO WAIT FOR</p>
+                <h1 class="hero-title">
+                    Skills are <span class="text-outline">assembled,</span><br>
+                    not attended.
+                </h1>
+                <p class="hero-sub">
+                    Prefab is a library of self-paced video courses built for people who'd rather ship
+                    than sit in a classroom. Buy once. Build on your own clock.
+                </p>
+                <div class="hero-actions">
+                    <a href="#catalog" class="btn btn-solid">Browse the catalog<span class="arrow">→</span></a>
+                    <a href="#method" class="btn btn-outline">How it works</a>
+                </div>
+                <div class="hero-stats">
+                    <div class="stat">
+                        <span class="stat-num">42</span>
+                        <span class="stat-label">Courses live</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-num">180+</span>
+                        <span class="stat-label">Hours of video</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-num">∞</span>
+                        <span class="stat-label">Access window</span>
+                    </div>
+                </div>
+            </div>
+            <div class="hero-panel" aria-hidden="true">
+                <div class="panel-head">
+                    <span></span><span></span><span></span>
+                    <span class="panel-title">course_player.mp4</span>
+                </div>
+                <div class="panel-body">
+                    <div class="waveform">
+                        <span></span><span></span><span></span><span></span><span></span>
+                        <span></span><span></span><span></span><span></span><span></span>
+                        <span></span><span></span><span></span><span></span><span></span>
+                        <span></span><span></span><span></span><span></span><span></span>
+                    </div>
+                    <div class="panel-meta">
+                        <span>04 · SYSTEMS DESIGN</span>
+                        <span class="timecode">12:04 / 38:20</span>
+                    </div>
+                    <div class="progress-track"><div class="progress-fill"></div></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===== TRUST STRIP ===== -->
+        <div class="trust-strip">
+            <p class="trust-label">Built by engineers previously at</p>
+            <div class="trust-marks">
+                <span>ISRO</span><span>ORACLE</span><span>ZERODHA</span><span>SIEMENS</span><span>SWIGGY</span>
+            </div>
+        </div>
+
+        <!-- ===== CATALOG ===== -->
+        <section id="catalog" class="catalog">
+            <div class="section-head">
+                <p class="eyebrow"><span class="dot"></span> CATALOG</p>
+                <h2>Pick your track</h2>
+            </div>
+            <div class="course-grid">
+
+                <article class="course-card" data-course="systems-design" data-price="2499">
+                    <div class="course-top">
+                        <span class="course-tag">TRACK / 01</span>
+                        <span class="course-level">Intermediate</span>
+                    </div>
+                    <h3>Systems Design From Scratch</h3>
+                    <p>Design large-scale systems the way they're actually built — with tradeoffs, not templates.</p>
+                    <ul class="course-meta">
+                        <li>9h 40m</li>
+                        <li>38 modules</li>
+                        <li>Certificate</li>
+                    </ul>
+                    <div class="course-foot">
+                        <span class="price">₹2,499</span>
+                        <button class="btn btn-solid btn-small add-to-cart" data-course="Systems Design From Scratch" data-price="2499">Add to cart</button>
+                    </div>
+                </article>
+
+                <article class="course-card" data-course="control-systems" data-price="3199">
+                    <div class="course-top">
+                        <span class="course-tag">TRACK / 02</span>
+                        <span class="course-level">Beginner</span>
+                    </div>
+                    <h3>Applied Control Systems</h3>
+                    <p>PID loops, state-space models, and real actuator behavior — for people who'll actually build the thing.</p>
+                    <ul class="course-meta">
+                        <li>14h 10m</li>
+                        <li>52 modules</li>
+                        <li>Certificate</li>
+                    </ul>
+                    <div class="course-foot">
+                        <span class="price">₹3,199</span>
+                        <button class="btn btn-solid btn-small add-to-cart" data-course="Applied Control Systems" data-price="3199">Add to cart</button>
+                    </div>
+                </article>
+
+                <article class="course-card" data-course="game-theory" data-price="1899">
+                    <div class="course-top">
+                        <span class="course-tag">TRACK / 03</span>
+                        <span class="course-level">Advanced</span>
+                    </div>
+                    <h3>Game Theory for Builders</h3>
+                    <p>Strategic reasoning applied to product, pricing, and negotiation — not the math-department version.</p>
+                    <ul class="course-meta">
+                        <li>6h 55m</li>
+                        <li>24 modules</li>
+                        <li>Certificate</li>
+                    </ul>
+                    <div class="course-foot">
+                        <span class="price">₹1,899</span>
+                        <button class="btn btn-solid btn-small add-to-cart" data-course="Game Theory for Builders" data-price="1899">Add to cart</button>
+                    </div>
+                </article>
+
+                <article class="course-card" data-course="embedded-robotics" data-price="2899">
+                    <div class="course-top">
+                        <span class="course-tag">TRACK / 04</span>
+                        <span class="course-level">Intermediate</span>
+                    </div>
+                    <h3>Embedded Robotics Toolchain</h3>
+                    <p>Firmware, sensor fusion, and the debugging habits that separate a demo from a product.</p>
+                    <ul class="course-meta">
+                        <li>11h 20m</li>
+                        <li>44 modules</li>
+                        <li>Certificate</li>
+                    </ul>
+                    <div class="course-foot">
+                        <span class="price">₹2,899</span>
+                        <button class="btn btn-solid btn-small add-to-cart" data-course="Embedded Robotics Toolchain" data-price="2899">Add to cart</button>
+                    </div>
+                </article>
+
+            </div>
+        </section>
+
+        <!-- ===== METHOD ===== -->
+        <section id="method" class="method">
+            <div class="section-head">
+                <p class="eyebrow"><span class="dot"></span> METHOD</p>
+                <h2>How Prefab is built, module by module</h2>
+            </div>
+            <div class="method-grid">
+                <div class="method-step">
+                    <span class="step-index">A</span>
+                    <h3>Watch in short passes</h3>
+                    <p>Every module runs 8–15 minutes. No hour-long lectures to lose your place in.</p>
+                </div>
+                <div class="method-step">
+                    <span class="step-index">B</span>
+                    <h3>Build alongside it</h3>
+                    <p>Each track ships with the source files, so you're working in parallel, not just watching.</p>
+                </div>
+                <div class="method-step">
+                    <span class="step-index">C</span>
+                    <h3>Own it permanently</h3>
+                    <p>One-time payment. No subscription, no expiry, no re-buying access next year.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===== PRICING ===== -->
+        <section id="pricing" class="pricing">
+            <div class="section-head">
+                <p class="eyebrow"><span class="dot"></span> PRICING</p>
+                <h2>Buy the track. Keep the track.</h2>
+            </div>
+            <div class="pricing-grid">
+
+                <div class="price-card" data-plan="single">
+                    <h3>Single Track</h3>
+                    <p class="price-desc">One course, lifetime access.</p>
+                    <div class="price-tag"><span class="currency">₹</span>1,899<span class="price-from">avg. start price</span></div>
+                    <ul class="price-features">
+                        <li>Full video library for the track</li>
+                        <li>Downloadable source files</li>
+                        <li>Certificate on completion</li>
+                        <li>Lifetime access &amp; updates</li>
+                    </ul>
+                    <button class="btn btn-outline btn-full checkout-trigger" data-plan="single" data-label="Single Track" data-price="1899">Buy this track</button>
+                </div>
+
+                <div class="price-card price-card-featured" data-plan="all-access">
+                    <span class="featured-tag">MOST BUILT ON</span>
+                    <h3>All-Access Pass</h3>
+                    <p class="price-desc">Every current and future course.</p>
+                    <div class="price-tag"><span class="currency">₹</span>7,999<span class="price-from">one-time</span></div>
+                    <ul class="price-features">
+                        <li>Everything in Single Track</li>
+                        <li>All future course releases included</li>
+                        <li>Priority doubt-resolution queue</li>
+                        <li>Early access to new tracks</li>
+                    </ul>
+                    <button class="btn btn-solid btn-full checkout-trigger" data-plan="all-access" data-label="All-Access Pass" data-price="7999">Get all-access</button>
+                </div>
+
+                <div class="price-card" data-plan="team">
+                    <h3>Team / Campus</h3>
+                    <p class="price-desc">For clubs, cohorts, and teams of 5+.</p>
+                    <div class="price-tag"><span class="price-custom">Custom</span></div>
+                    <ul class="price-features">
+                        <li>Bulk seat pricing</li>
+                        <li>Shared progress dashboard</li>
+                        <li>Invoice &amp; GST billing</li>
+                        <li>Dedicated onboarding</li>
+                    </ul>
+                    <button class="btn btn-outline btn-full checkout-trigger" data-plan="team" data-label="Team / Campus" data-price="custom">Talk to us</button>
+                </div>
+
+            </div>
+            <p class="pricing-note">Secure checkout. Cards, UPI, and netbanking accepted. Prices in INR.</p>
+        </section>
+
+        <!-- ===== FAQ ===== -->
+        <section id="faq" class="faq">
+            <div class="section-head">
+                <p class="eyebrow"><span class="dot"></span> FAQ</p>
+                <h2>Before you enroll</h2>
+            </div>
+            <div class="faq-list">
+                <details class="faq-item" open>
+                    <summary>Do the courses expire?</summary>
+                    <p>No. Every purchase — single track or all-access — is a one-time payment with lifetime access, including future updates to that content.</p>
+                </details>
+                <details class="faq-item">
+                    <summary>Is there a schedule I need to follow?</summary>
+                    <p>No cohorts, no fixed start dates. Modules unlock immediately and you move through them at your own pace.</p>
+                </details>
+                <details class="faq-item">
+                    <summary>What if a course isn't right for me?</summary>
+                    <p>7-day refund window from purchase, no questions asked, as long as you haven't completed more than 20% of the track.</p>
+                </details>
+                <details class="faq-item">
+                    <summary>Do I get a certificate?</summary>
+                    <p>Yes — a completion certificate is issued automatically once you finish all modules in a track.</p>
+                </details>
+                <details class="faq-item">
+                    <summary>Can I access courses on mobile?</summary>
+                    <p>Yes, the player works on any modern browser, desktop or mobile. No app required.</p>
+                </details>
+            </div>
+        </section>
+
+        <!-- ===== FINAL CTA ===== -->
+        <section class="final-cta">
+            <h2>Stop scheduling your growth.<br>Start building it.</h2>
+            <a href="#pricing" class="btn btn-solid btn-large">Browse the catalog<span class="arrow">→</span></a>
+        </section>
+
+    </main>
+
+    <!-- ===== FOOTER ===== -->
+    <footer class="footer">
+        <div class="footer-inner">
+            <div class="footer-brand">
+                <span class="logo-mark">▣</span> PREFAB
+                <p>Self-paced courses for people who build.</p>
+            </div>
+            <div class="footer-cols">
+                <div class="footer-col">
+                    <h4>Product</h4>
+                    <a href="#catalog">Catalog</a>
+                    <a href="#method">Method</a>
+                    <a href="#pricing">Pricing</a>
+                </div>
+                <div class="footer-col">
+                    <h4>Company</h4>
+                    <a href="#">About</a>
+                    <a href="#">Contact</a>
+                    <a href="#">Terms</a>
+                </div>
+                <div class="footer-col">
+                    <h4>Support</h4>
+                    <a href="#faq">FAQ</a>
+                    <a href="#">Refund policy</a>
+                    <a href="#">support@prefab.dev</a>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <span>© 2026 Prefab. All rights reserved.</span>
+            <span class="footer-tag">SYSTEM STATUS: ALL COURSES OPERATIONAL</span>
+        </div>
+    </footer>
+
+    <!-- ===== CHECKOUT MODAL ===== -->
+    <div class="modal-overlay" id="checkoutModal" aria-hidden="true">
+        <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+            <button class="modal-close" id="modalClose" aria-label="Close checkout">×</button>
+            <p class="eyebrow"><span class="dot"></span> CHECKOUT</p>
+            <h3 id="modalTitle">Complete your purchase</h3>
+            <div class="modal-summary">
+                <span id="modalPlanName">Plan</span>
+                <span id="modalPlanPrice">₹0</span>
+            </div>
+            <form id="checkoutForm" novalidate>
+                <label>Email
+                    <input type="email" required placeholder="you@domain.com" id="checkoutEmail">
+                </label>
+                <label>Full name
+                    <input type="text" required placeholder="Jane Doe" id="checkoutName">
+                </label>
+                <button type="submit" class="btn btn-solid btn-full">Pay &amp; get instant access</button>
+            </form>
+            <p class="modal-note">This is a demo checkout — connect Razorpay/Stripe here to go live.</p>
+        </div>
+    </div>
+
+    <script>
+        /* ================================================================
+               SCRIPT.JS — Complete interactivity
+               ================================================================ */
+
+        (function() {
+            'use strict';
+
+            // ---- DOM refs ----
+            const modal = document.getElementById('checkoutModal');
+            const modalClose = document.getElementById('modalClose');
+            const modalPlanName = document.getElementById('modalPlanName');
+            const modalPlanPrice = document.getElementById('modalPlanPrice');
+            const checkoutForm = document.getElementById('checkoutForm');
+            const navToggle = document.getElementById('navToggle');
+            const navLinks = document.getElementById('navLinks');
+
+            // ---- Helpers ----
+            function formatPrice(amount) {
+                if (amount === 'custom') return 'Custom';
+                return '₹' + Number(amount).toLocaleString('en-IN');
+            }
+
+            function openModal(planLabel, price) {
+                modalPlanName.textContent = planLabel;
+                modalPlanPrice.textContent = formatPrice(price);
+                modal.setAttribute('aria-hidden', 'false');
+                modal.classList.add('open');
+                document.body.style.overflow = 'hidden';
+                // focus first input after animation
+                setTimeout(() => {
+                    const firstInput = document.getElementById('checkoutEmail');
+                    if (firstInput) firstInput.focus();
+                }, 350);
+            }
+
+            function closeModal() {
+                modal.setAttribute('aria-hidden', 'true');
+                modal.classList.remove('open');
+                document.body.style.overflow = '';
+            }
+
+            // ---- Modal triggers ----
+            // Pricing plan buttons
+            document.querySelectorAll('.checkout-trigger').forEach(function(btn) {
+                btn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const label = this.getAttribute('data-label');
+                    const price = this.getAttribute('data-price');
+                    openModal(label, price);
+                });
+            });
+
+            // "Add to cart" buttons on course cards
+            document.querySelectorAll('.add-to-cart').forEach(function(btn) {
+                btn.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    const course = this.getAttribute('data-course');
+                    const price = this.getAttribute('data-price');
+                    openModal(course, price);
+                });
+            });
+
+            // Close modal
+            modalClose.addEventListener('click', closeModal);
+
+            // Click outside modal content closes it
+            modal.addEventListener('click', function(e) {
+                if (e.target === this) closeModal();
+            });
+
+            // Escape key closes modal
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape' && modal.classList.contains('open')) {
+                    closeModal();
+                }
+            });
+
+            // ---- Form submission ----
+            checkoutForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+
+                const email = document.getElementById('checkoutEmail').value.trim();
+                const name = document.getElementById('checkoutName').value.trim();
+
+                if (!email || !name) {
+                    alert('Please fill in both email and name.');
+                    return;
+                }
+
+                if (!email.includes('@') || !email.includes('.')) {
+                    alert('Please enter a valid email address.');
+                    return;
+                }
+
+                // In production, you'd send this to your backend / payment gateway.
+                // For demo, show a success message.
+                alert(
+                    '✅ Demo checkout complete!\n\n' +
+                    'Plan: ' + modalPlanName.textContent + '\n' +
+                    'Amount: ' + modalPlanPrice.textContent + '\n' +
+                    'Email: ' + email + '\n' +
+                    'Name: ' + name + '\n\n' +
+                    'In production, this would redirect to Razorpay/Stripe.'
+                );
+
+                closeModal();
+                checkoutForm.reset();
+            });
+
+            // ---- Mobile nav toggle ----
+            navToggle.addEventListener('click', function() {
+                const isOpen = navLinks.classList.toggle('open');
+                this.classList.toggle('open');
+                this.setAttribute('aria-expanded', isOpen);
+            });
+
+            // Close mobile nav when a link is clicked
+            navLinks.querySelectorAll('a').forEach(function(link) {
+                link.addEventListener('click', function() {
+                    navLinks.classList.remove('open');
+                    navToggle.classList.remove('open');
+                    navToggle.setAttribute('aria-expanded', 'false');
+                });
+            });
+
+            // ---- Smooth anchor scroll (progressive enhancement) ----
+            document.querySelectorAll('a[href^="#"]').forEach(function(anchor) {
+                anchor.addEventListener('click', function(e) {
+                    const targetId = this.getAttribute('href');
+                    if (targetId === '#') return;
+                    const target = document.querySelector(targetId);
+                    if (target) {
+                        e.preventDefault();
+                        const navHeight = document.querySelector('.nav').offsetHeight || 80;
+                        const top = target.getBoundingClientRect().top + window.pageYOffset - navHeight - 16;
+                        window.scrollTo({ top: top, behavior: 'smooth' });
+                    }
+                });
+            });
+
+            // ---- Small UX: auto-close details in FAQ when clicking on a different one ----
+            const faqItems = document.querySelectorAll('.faq-item');
+            faqItems.forEach(function(item) {
+                const summary = item.querySelector('summary');
+                if (summary) {
+                    summary.addEventListener('click', function(e) {
+                        // If this item is already open, let it toggle naturally
+                        // Otherwise close others
+                        if (!item.hasAttribute('open')) {
+                            faqItems.forEach(function(other) {
+                                if (other !== item && other.hasAttribute('open')) {
+                                    other.removeAttribute('open');
+                                }
+                            });
+                        }
+                    });
+                }
+            });
+
+            // ---- Keyboard trap inside modal ----
+            modal.addEventListener('keydown', function(e) {
+                if (e.key === 'Tab') {
+                    const focusable = modal.querySelectorAll(
+                        'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+                    );
+                    const first = focusable[0];
+                    const last = focusable[focusable.length - 1];
+                    if (e.shiftKey && document.activeElement === first) {
+                        e.preventDefault();
+                        last.focus();
+                    } else if (!e.shiftKey && document.activeElement === last) {
+                        e.preventDefault();
+                        first.focus();
+                    }
+                }
+            });
+
+            // ---- Prevent body scroll when modal is open (redundant but safe) ----
+            const observer = new MutationObserver(function() {
+                if (modal.classList.contains('open')) {
+                    document.body.style.overflow = 'hidden';
+                } else {
+                    document.body.style.overflow = '';
+                }
+            });
+            observer.observe(modal, { attributes: true, attributeFilter: ['class'] });
+
+            console.log('🔧 Prefab — all systems go.');
+        })();
+    </script>
 
 </body>
 </html>
